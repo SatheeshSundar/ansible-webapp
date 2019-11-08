@@ -1,0 +1,40 @@
+ -  name: Deploy a web application
+    hosts: db_and_web_server*
+    tasks:
+      - name: Install all required dependencies
+        raw: sudo apt-get install "{‌{ item }}"
+        with_items:
+          - python
+          - python-pip
+      - name: Install MYSQL database
+        raw: sudo apt-get install "{‌{ item }}"
+        with_items:
+          - mysql-server
+          - mysql-client
+      - name: Start MYSQL Service
+        service:
+          name: mysql
+          state: started
+          enabled: yes
+      - name: Create Application database
+        mysql_db: 
+          name: employee_db 
+          state: present
+      - name: Create database User
+        mysql_user:
+          name: db_user
+          password: Passw0rd
+          priv: '*.*:ALL'
+          state: present
+          host: '%'
+      - name: Install Python Flask Dependency
+        pip:
+          name: "{‌{ item }}"
+          state: present
+        with_items:
+          - flask
+          - flask-mysql
+      - name: Copy Source code
+        copy: src=/opt/app.py dest=/opt/app.py
+      - name: Start web server
+        shell: FLASK_APP=app.py nohup flask run --host=0.0.0.0 &
