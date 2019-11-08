@@ -1,0 +1,2 @@
+db_and_web_server1 ansible_host=3.17.143.214
+db_and_web_server2 ansible_host=3.14.127.188
